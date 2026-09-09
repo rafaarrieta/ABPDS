@@ -131,6 +131,9 @@ export default function TodoApp() {
               Eliminar
             </button>
           </li>
+          <p>
+            total de tareas
+          </p>
         ))}
       </ul>
     </main>

@@ -10,10 +10,10 @@ interface Todo {
 
 export default function TodoApp() {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [deletedTodos, setDeletedTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  // 1. CREATE: Crear con Enter (sin botón)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && input.trim() !== '') {
       const newTodo: Todo = {
@@ -26,7 +26,6 @@ export default function TodoApp() {
     }
   };
 
-  // 2. TOGGLE: El chulito solo tacha/completa (no borra)
   const toggleTodo = (id: number) => {
     setTodos(
       todos.map((todo) =>
@@ -35,7 +34,6 @@ export default function TodoApp() {
     );
   };
 
-  // 3. UPDATE: Guardar edición de texto (autoguardado al salir o presionar Enter)
   const updateTodoText = (id: number, newText: string) => {
     setTodos(
       todos.map((todo) =>
@@ -45,97 +43,144 @@ export default function TodoApp() {
     setEditingId(null);
   };
 
-  // 4. DELETE: Botón aparte que elimina por completo
   const deleteTodo = (id: number) => {
+    const todoToDelete = todos.find((todo) => todo.id === id);
+    if (todoToDelete) {
+      setDeletedTodos([...deletedTodos, todoToDelete]);
+    }
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   return (
-    <main style={{ maxWidth: '400px', margin: '50px auto', fontFamily: 'sans-serif' }}>
-      <h2>TODO List — Sustentación</h2>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', padding: '40px 20px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+      <main style={{ width: '100%', maxWidth: '450px', backgroundColor: '#ffffff', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', padding: '28px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        
+        <h2 style={{ margin: '0 0 6px 0', color: '#111827', fontSize: '1.4rem', fontWeight: '700', textAlign: 'center' }}>
+          Gestor de Tareas
+        </h2>
+        <p style={{ margin: '0 0 20px 0', color: '#6b7280', fontSize: '0.85rem', textAlign: 'center' }}>
+          Sustentación de Proyecto
+        </p>
 
-      {/* Input de creación */}
-      <input
-        type="text"
-        placeholder="Escribe una tarea y presiona Enter..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-        style={{ width: '100%', padding: '10px', marginBottom: '20px', boxSizing: 'border-box' }}
-      />
+        {/* Campo de texto */}
+        <input
+          type="text"
+          placeholder="Escribe una tarea"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          style={{
+            width: '100%',
+            padding: '12px 14px',
+            borderRadius: '8px',
+            border: '1px solid #d1d5db',
+            fontSize: '0.95rem',
+            outline: 'none',
+            boxSizing: 'border-box',
+            backgroundColor: '#f9fafb',
+            color: '#111827',
+            marginBottom: '20px'
+          }}
+        />
 
-      {/* Lista de tareas (READ) */}
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {todos.map((todo) => (
-          <li
-            key={todo.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '10px',
-              padding: '8px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-              {/* Checkbox (solo tacha) */}
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => toggleTodo(todo.id)}
-              />
-
-              {/* Edición o Vista del ítem */}
-              {editingId === todo.id ? (
+        {/* Lista de tareas activas */}
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          {todos.map((todo) => (
+            <li
+              key={todo.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '10px 12px',
+                marginBottom: '8px',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                backgroundColor: '#ffffff',
+                gap: '12px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
                 <input
-                  type="text"
-                  defaultValue={todo.text}
-                  autoFocus
-                  onBlur={(e) => updateTodoText(todo.id, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      updateTodoText(todo.id, e.currentTarget.value);
-                    }
-                  }}
-                  style={{ width: '90%' }}
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => toggleTodo(todo.id)}
+                  style={{ width: '16px', height: '16px', cursor: 'pointer' }}
                 />
-              ) : (
-                <span
-                  onClick={() => setEditingId(todo.id)}
+
+                {editingId === todo.id ? (
+                  <input
+                    type="text"
+                    defaultValue={todo.text}
+                    autoFocus
+                    onBlur={(e) => updateTodoText(todo.id, e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') updateTodoText(todo.id, e.currentTarget.value);
+                    }}
+                    style={{ flex: 1, padding: '4px 8px', borderRadius: '4px', border: '1px solid #9ca3af', color: '#111827' }}
+                  />
+                ) : (
+                  <span
+                    onClick={() => setEditingId(todo.id)}
+                    style={{
+                      flex: 1,
+                      cursor: 'pointer',
+                      fontSize: '0.95rem',
+                      color: todo.completed ? '#9ca3af' : '#1f2937',
+                      textDecoration: todo.completed ? 'line-through' : 'none',
+                    }}
+                  >
+                    {todo.text}
+                  </span>
+                )}
+              </div>
+
+              <button
+                onClick={() => deleteTodo(todo.id)}
+                style={{
+                  backgroundColor: '#fee2e2',
+                  color: '#dc2626',
+                  border: 'none',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                }}
+              >
+                Eliminar
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* Sección de Tareas Eliminadas */}
+        {deletedTodos.length > 0 && (
+          <section style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px dashed #e5e7eb' }}>
+            <h3 style={{ color: '#6b7280', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
+               Papelera ({deletedTodos.length})
+            </h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {deletedTodos.map((todo) => (
+                <li
+                  key={todo.id}
                   style={{
-                    textDecoration: todo.completed ? 'line-through' : 'none',
-                    cursor: 'pointer',
-                    color: todo.completed ? '#888' : '#000',
-                    flex: 1,
+                    padding: '8px 12px',
+                    marginBottom: '6px',
+                    backgroundColor: '#f3f4f6',
+                    borderRadius: '6px',
+                    color: '#9ca3af',
+                    fontSize: '0.9rem',
+                    textDecoration: 'line-through',
                   }}
                 >
                   {todo.text}
-                </span>
-              )}
-            </div>
-
-            {/* Botón Eliminar */}
-            <button
-              onClick={() => deleteTodo(todo.id)}
-              style={{
-                backgroundColor: '#ff4d4d',
-                color: 'white',
-                border: 'none',
-                padding: '5px 10px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
-            >
-              Eliminar
-            </button>
-          </li>
-          <p>
-            total de tareas
-          </p>
-        ))}
-      </ul>
-    </main>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </main>
+    </div>
   );
 }

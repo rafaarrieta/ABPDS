@@ -67,7 +67,7 @@ export default function TodoApp() {
       {/* Lista de tareas (READ) */}
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {todos.map((todo) => (
-          <li
+          <><li
             key={todo.id}
             style={{
               display: 'flex',
@@ -84,8 +84,7 @@ export default function TodoApp() {
               <input
                 type="checkbox"
                 checked={todo.completed}
-                onChange={() => toggleTodo(todo.id)}
-              />
+                onChange={() => toggleTodo(todo.id)} />
 
               {/* Edición o Vista del ítem */}
               {editingId === todo.id ? (
@@ -98,9 +97,8 @@ export default function TodoApp() {
                     if (e.key === 'Enter') {
                       updateTodoText(todo.id, e.currentTarget.value);
                     }
-                  }}
-                  style={{ width: '90%' }}
-                />
+                  } }
+                  style={{ width: '90%' }} />
               ) : (
                 <span
                   onClick={() => setEditingId(todo.id)}
@@ -130,10 +128,9 @@ export default function TodoApp() {
             >
               Eliminar
             </button>
-          </li>
-          <p>
-            total de tareas
-          </p>
+          </li><p>
+              total de tareas
+            </p></>
         ))}
       </ul>
     </main>

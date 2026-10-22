@@ -83,6 +83,46 @@ export default function TodoApp() {
           }}
         />
 
+<<<<<<< HEAD
+      {/* Lista de tareas (READ) */}
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {todos.map((todo) => (
+          <><li
+            key={todo.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '10px',
+              padding: '8px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+              {/* Checkbox (solo tacha) */}
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => toggleTodo(todo.id)} />
+
+              {/* Edición o Vista del ítem */}
+              {editingId === todo.id ? (
+                <input
+                  type="text"
+                  defaultValue={todo.text}
+                  autoFocus
+                  onBlur={(e) => updateTodoText(todo.id, e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      updateTodoText(todo.id, e.currentTarget.value);
+                    }
+                  } }
+                  style={{ width: '90%' }} />
+              ) : (
+                <span
+                  onClick={() => setEditingId(todo.id)}
+=======
         {/* Lista de tareas activas */}
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {todos.map((todo) => (
@@ -164,6 +204,7 @@ export default function TodoApp() {
               {deletedTodos.map((todo) => (
                 <li
                   key={todo.id}
+>>>>>>> ff4c00a7e6037f912cf9d1ca95974decd050737a
                   style={{
                     padding: '8px 12px',
                     marginBottom: '6px',
@@ -175,6 +216,32 @@ export default function TodoApp() {
                   }}
                 >
                   {todo.text}
+<<<<<<< HEAD
+                </span>
+              )}
+            </div>
+
+            {/* Botón Eliminar */}
+            <button
+              onClick={() => deleteTodo(todo.id)}
+              style={{
+                backgroundColor: '#ff4d4d',
+                color: 'white',
+                border: 'none',
+                padding: '5px 10px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              Eliminar
+            </button>
+          </li><p>
+              total de tareas
+            </p></>
+        ))}
+      </ul>
+    </main>
+=======
                 </li>
               ))}
             </ul>
@@ -182,5 +249,6 @@ export default function TodoApp() {
         )}
       </main>
     </div>
+>>>>>>> ff4c00a7e6037f912cf9d1ca95974decd050737a
   );
 }

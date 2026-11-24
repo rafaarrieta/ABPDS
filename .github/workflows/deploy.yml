@@ -1,8 +1,8 @@
-name: Deploy Next.js (estático) a EC2
+name: Publicar sitio en S3
 
 on:
   push:
-    branches: [main, classactivity]
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -19,14 +19,13 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: Configurar SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY_JHORDAN }}" > ~/.ssh/key.pem
-          chmod 600 ~/.ssh/key.pem
-          ssh-keyscan -H ${{ secrets.EC2_HOST_JHORDAN }} >> ~/.ssh/known_hosts
+      - name: Credenciales de AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
 
-      - name: Copiar out/ a EC2
-        run: |
-          rsync -avz --delete -e "ssh -i ~/.ssh/key.pem" \
-            ./out/ ${{ secrets.EC2_USER_JHORDAN }}@${{ secrets.EC2_HOST_JHORDAN }}:/var/www/html/
+      - name: Subir out/ a S3
+        run: aws s3 sync ./out s3://${{ secrets.S3_BUCKET }} --delete

@@ -2,11 +2,12 @@ name: Publicar sitio en S3
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
+    name: Compilar la aplicación
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,8 +17,28 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: npm ci
-      - run: npm run build
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar archivos estáticos
+        run: npm run build
+
+      - name: Guardar carpeta out/
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitio-estatico
+          path: out/
+
+  deploy:
+    name: Publicar en S3
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar carpeta out/
+        uses: actions/download-artifact@v4
+        with:
+          name: sitio-estatico
+          path: out/
 
       - name: Credenciales de AWS
         uses: aws-actions/configure-aws-credentials@v4
